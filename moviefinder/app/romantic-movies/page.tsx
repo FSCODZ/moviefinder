@@ -1,9 +1,11 @@
-export default function RomanticMovies() {
-    return (
-      <div>
-        <h1>Romantic Movies</h1>
-        <p>Here you will find the latest romantic movies!</p>
-      </div>
-    );
-  }
-  
+import RomanticMovies from "../components/RomanticMovie";
+
+const RomanticMoviesPage = () => {
+  return (
+    <div>
+      <RomanticMovies />
+    </div>
+  );
+};
+
+export default RomanticMoviesPage;
