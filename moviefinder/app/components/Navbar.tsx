@@ -24,7 +24,7 @@ const Navbar = () => {
           <Link href="/romantic-movies" className="text-white text-xl font-semibold">
             Romance
           </Link>
-          <Link href="/comedy-movies" className="text-white text-xl font-semibold">
+          <Link href="/comedi-movies" className="text-white text-xl font-semibold">
             Comedy
           </Link>
         </div>
