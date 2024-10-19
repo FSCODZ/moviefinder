@@ -8,188 +8,111 @@ const BASE_URL = "https://api.themoviedb.org/3";
 
 const genreMapping = {
   28: "Action",
-  12: "Adventure",
-  16: "Animation",
-  35: "Comedy",
-  80: "Crime",
-  99: "Documentary",
-  18: "Drama",
-  10751: "Family",
-  14: "Fantasy",
-  36: "History",
-  27: "Horror",
-  10402: "Music",
-  9648: "Mystery",
   10749: "Romance",
-  878: "Science Fiction",
-  10770: "TV Movie",
-  53: "Thriller",
-  10752: "War",
-  37: "Western",
+  35: "Comedy",
 };
 
 const HomePage = () => {
   const [actionMovies, setActionMovies] = useState([]);
   const [romanticMovies, setRomanticMovies] = useState([]);
   const [comedyMovies, setComedyMovies] = useState([]);
-  
-  const [actionPage, setActionPage] = useState(1); // Page state for Action movies
-  const [romanticPage, setRomanticPage] = useState(1); // Page state for Romantic movies
-  const [comedyPage, setComedyPage] = useState(1); // Page state for Comedy movies
-  
+
   const MOVIES_PER_PAGE = 5; // Number of movies per page
 
-  // Funktion för att hämta filmer baserat på genre
   const fetchMoviesByGenre = async (genreId, setterFunction) => {
     try {
       const response = await axios.get(`${BASE_URL}/discover/movie`, {
         params: {
           api_key: API_KEY,
           with_genres: genreId,
-          sort_by: "popularity.desc", // Sortera efter popularitet
+          sort_by: "popularity.desc", 
           language: "en-US",
         },
       });
-      setterFunction(response.data.results); // Hämta alla populära filmer för genren
+      setterFunction(response.data.results);
     } catch (error) {
       console.error(`Error fetching movies for genre ${genreId}:`, error);
     }
   };
 
-  // Hämta filmer när komponenten laddas
   useEffect(() => {
-    fetchMoviesByGenre(28, setActionMovies); // Action
-    fetchMoviesByGenre(10749, setRomanticMovies); // Romance
-    fetchMoviesByGenre(35, setComedyMovies); // Comedy
+    fetchMoviesByGenre(28, setActionMovies);
+    fetchMoviesByGenre(10749, setRomanticMovies);
+    fetchMoviesByGenre(35, setComedyMovies);
   }, []);
 
-  // Funktion för att visa en specifik sida av filmerna
-  const paginateMovies = (movies, page) => {
-    const startIndex = (page - 1) * MOVIES_PER_PAGE;
-    return movies.slice(startIndex, startIndex + MOVIES_PER_PAGE);
-  };
-
-  // Funktion för att hämta genrenamn baserat på genre_ids
   const getGenres = (genreIds) => {
     return genreIds.map((id) => genreMapping[id]).join(", ");
   };
 
   return (
-    <div className="min-h-screen bg-darkblue">
-      {/* Landing Page Section */}
-      <section className="h-screen bg-cover bg-center flex flex-col justify-center items-center" style={{ backgroundImage: 'url(/path-to-background-image.jpg)' }}>
-        <h1 className="text-5xl font-bold text-white mb-4">Welcome to MovieFinder</h1>
-        <p className="text-xl text-white">where you can find your new favorite movie</p>
-      </section>
+    <div className="bg-black text-yellow-300 p-5">
+      {/* Header */}
+      <div className="text-center py-10">
+        <h1 className="text-5xl font-bold">Movies change your life</h1>
+        <p className="text-xl mt-4">Millions of movies and people to discover. Explore now</p>
+        <div className="mt-5">
+          <input
+            className="w-1/2 p-3 rounded-l-lg"
+            type="text"
+            placeholder="Search for a movie, person..."
+          />
+          <button className="p-3 bg-yellow-500 rounded-r-lg">Search</button>
+        </div>
+      </div>
 
-      <div className="p-6">
-        {/* Action Movies Section */}
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold text-white mb-4">Most Popular Action Movies</h2>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {paginateMovies(actionMovies, actionPage).map((movie) => (
-              <div key={movie.id} className="bg-white p-4 rounded-md shadow-md">
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                  alt={movie.title}
-                  className="w-full h-48 object-cover rounded-md mb-4"
-                />
-                <h3 className="text-lg font-semibold text-gray-700">{movie.title}</h3>
-                <p className="text-sm text-gray-600 mb-2">{movie.overview}</p>
-                <p className="text-sm text-gray-600"><strong>Rating:</strong> {movie.vote_average}/10</p>
-                <p className="text-sm text-gray-600"><strong>Genres:</strong> {getGenres(movie.genre_ids)}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between mt-4">
-            <button
-              className="text-white bg-blue-500 p-2 rounded"
-              disabled={actionPage === 1}
-              onClick={() => setActionPage(actionPage - 1)}
-            >
-              Previous
-            </button>
-            <button
-              className="text-white bg-blue-500 p-2 rounded"
-              disabled={actionPage * MOVIES_PER_PAGE >= actionMovies.length}
-              onClick={() => setActionPage(actionPage + 1)}
-            >
-              Next
-            </button>
-          </div>
-        </section>
+      {/* Action Movies Section */}
+      <div className="mt-10">
+        <h2 className="text-3xl font-bold mb-4">Trending Action Movies</h2>
+        <div className="flex overflow-x-scroll space-x-5">
+          {actionMovies.map((movie) => (
+            <div key={movie.id} className="w-64">
+              <img
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+                className="w-full h-80 object-cover rounded-md"
+              />
+              <h3 className="text-lg mt-2">{movie.title}</h3>
+            
+            </div>
+          ))}
+        </div>
+      </div>
 
-        {/* Romantic Movies Section */}
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold text-white mb-4">Most Popular Romantic Movies</h2>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {paginateMovies(romanticMovies, romanticPage).map((movie) => (
-              <div key={movie.id} className="bg-white p-4 rounded-md shadow-md">
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                  alt={movie.title}
-                  className="w-full h-48 object-cover rounded-md mb-4"
-                />
-                <h3 className="text-lg font-semibold text-gray-700">{movie.title}</h3>
-                <p className="text-sm text-gray-600 mb-2">{movie.overview}</p>
-                <p className="text-sm text-gray-600"><strong>Rating:</strong> {movie.vote_average}/10</p>
-                <p className="text-sm text-gray-600"><strong>Genres:</strong> {getGenres(movie.genre_ids)}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between mt-4">
-            <button
-              className="text-white bg-blue-500 p-2 rounded"
-              disabled={romanticPage === 1}
-              onClick={() => setRomanticPage(romanticPage - 1)}
-            >
-              Previous
-            </button>
-            <button
-              className="text-white bg-blue-500 p-2 rounded"
-              disabled={romanticPage * MOVIES_PER_PAGE >= romanticMovies.length}
-              onClick={() => setRomanticPage(romanticPage + 1)}
-            >
-              Next
-            </button>
-          </div>
-        </section>
+      {/* Romantic Movies Section */}
+      <div className="mt-10">
+        <h2 className="text-3xl font-bold mb-4">What's Popular in Romance</h2>
+        <div className="flex overflow-x-scroll space-x-5">
+          {romanticMovies.map((movie) => (
+            <div key={movie.id} className="w-64">
+              <img
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+                className="w-full h-80 object-cover rounded-md"
+              />
+              <h3 className="text-lg mt-2">{movie.title}</h3>
+              
+            </div>
+          ))}
+        </div>
+      </div>
 
-        {/* Comedy Movies Section */}
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold text-white mb-4">Most Popular Comedy Movies</h2>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {paginateMovies(comedyMovies, comedyPage).map((movie) => (
-              <div key={movie.id} className="bg-white p-4 rounded-md shadow-md">
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                  alt={movie.title}
-                  className="w-full h-48 object-cover rounded-md mb-4"
-                />
-                <h3 className="text-lg font-semibold text-gray-700">{movie.title}</h3>
-                <p className="text-sm text-gray-600 mb-2">{movie.overview}</p>
-                <p className="text-sm text-gray-600"><strong>Rating:</strong> {movie.vote_average}/10</p>
-                <p className="text-sm text-gray-600"><strong>Genres:</strong> {getGenres(movie.genre_ids)}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between mt-4">
-            <button
-              className="text-white bg-blue-500 p-2 rounded"
-              disabled={comedyPage === 1}
-              onClick={() => setComedyPage(comedyPage - 1)}
-            >
-              Previous
-            </button>
-            <button
-              className="text-white bg-blue-500 p-2 rounded"
-              disabled={comedyPage * MOVIES_PER_PAGE >= comedyMovies.length}
-              onClick={() => setComedyPage(comedyPage + 1)}
-            >
-              Next
-            </button>
-          </div>
-        </section>
+      {/* Comedy Movies Section */}
+      <div className="mt-10">
+        <h2 className="text-3xl font-bold mb-4">Top Comedy Movies</h2>
+        <div className="flex overflow-x-scroll space-x-5">
+          {comedyMovies.map((movie) => (
+            <div key={movie.id} className="w-64">
+              <img
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+                className="w-full h-80 object-cover rounded-md"
+              />
+              <h3 className="text-lg mt-2">{movie.title}</h3>
+             
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

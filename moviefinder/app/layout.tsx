@@ -1,9 +1,9 @@
-import './globals.css'; // För Tailwind CSS om du använder det
+import './globals.css'; 
 import Navbar from './components/Navbar';
 import { ReactNode } from 'react';
 
 interface RootLayoutProps {
-  children: ReactNode; // Typa children med ReactNode
+  children: ReactNode; 
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
