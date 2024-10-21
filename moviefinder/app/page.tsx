@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import MovieModal from "./components/MovieModal";
 
 const API_KEY = "dbeeb30a06089bf15dbac384b5baa25a"; // Din API-nyckel
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -12,6 +13,8 @@ const HomePage = () => {
   const [comedyMovies, setComedyMovies] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Tillstånd för modalen
+  const [selectedMovie, setSelectedMovie] = useState(null); // Vald film
 
   const fetchMoviesByGenre = async (genreId, setterFunction) => {
     try {
@@ -50,8 +53,37 @@ const HomePage = () => {
     }
   };
 
-  const handleMovieClick = (movieId) => {
-    window.location.href = `/movie/${movieId}`; // Navigera till filmdetaljsidan
+  const openModal = async (movie) => {
+    try {
+      // Hämta detaljer för den valda filmen
+      const response = await axios.get(`${BASE_URL}/movie/${movie.id}`, {
+        params: {
+          api_key: API_KEY,
+          language: "en-US",
+          append_to_response: "credits", // Hämta skådespelare och crew
+        },
+      });
+
+      const movieDetails = {
+        id: response.data.id,
+        title: response.data.title,
+        description: response.data.overview || "No description available.", // Hämta beskrivning
+        releaseDate: response.data.release_date || "No release date available.", // Hämta releasedatum
+        genres: response.data.genres.map((genre) => genre.name), // Hämta genrer
+        cast: response.data.credits.cast.slice(0, 5), // Hämta de första 5 skådespelarna
+        crew: response.data.credits.crew.slice(0, 5), // Hämta de första 5 i crew
+        posterPath: response.data.poster_path // Hämta bild för filmen
+      };
+      setSelectedMovie(movieDetails);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching movie details:", error);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedMovie(null);
   };
 
   useEffect(() => {
@@ -70,7 +102,7 @@ const HomePage = () => {
         </p>
         <div className="mt-5">
           <input
-            className="w-1/2 p-3 rounded-l-lg text-black" // Texten i input-fältet blir svart
+            className="w-1/2 p-3 rounded-l-lg text-black"
             type="text"
             placeholder="Search for a movie, person..."
             value={searchQuery}
@@ -94,14 +126,14 @@ const HomePage = () => {
               <div
                 key={movie.id}
                 className="min-w-[160px]"
-                onClick={() => handleMovieClick(movie.id)}
+                onClick={() => openModal(movie)} // Öppna modalen på klick
               >
                 <img
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                   alt={movie.title}
                   className="w-full h-80 object-cover rounded-md"
                 />
-                <h3 className=" text-white text-lg mt-2 p-5">{movie.title}</h3>
+                <h3 className="text-white text-lg mt-2 p-5">{movie.title}</h3>
               </div>
             ))}
           </div>
@@ -110,20 +142,20 @@ const HomePage = () => {
 
       {/* Action Movies Section */}
       <div className="mt-10">
-        <h2 className=" text-white text-3xl font-bold mb-4">Trending Action Movies</h2>
+        <h2 className="text-white text-3xl font-bold mb-4">Trending Action Movies</h2>
         <div className="flex overflow-x-auto space-x-5 py-4 scrollbar-hide">
           {actionMovies.map((movie) => (
             <div
               key={movie.id}
               className="min-w-[160px]"
-              onClick={() => handleMovieClick(movie.id)}
+              onClick={() => openModal(movie)} // Öppna modalen på klick
             >
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
                 className="w-full h-80 object-cover rounded-md"
               />
-              <h3 className=" text-white text-lg mt-2 p-5">{movie.title}</h3>
+              <h3 className="text-white text-lg mt-2 p-5">{movie.title}</h3>
             </div>
           ))}
         </div>
@@ -137,14 +169,14 @@ const HomePage = () => {
             <div
               key={movie.id}
               className="min-w-[160px]"
-              onClick={() => handleMovieClick(movie.id)}
+              onClick={() => openModal(movie)} // Öppna modalen på klick
             >
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
                 className="w-full h-80 object-cover rounded-md"
               />
-              <h3 className=" text-white text-lg mt-2 p-5">{movie.title}</h3>
+              <h3 className="text-white text-lg mt-2 p-5">{movie.title}</h3>
             </div>
           ))}
         </div>
@@ -158,18 +190,25 @@ const HomePage = () => {
             <div
               key={movie.id}
               className="min-w-[160px]"
-              onClick={() => handleMovieClick(movie.id)}
+              onClick={() => openModal(movie)} // Öppna modalen på klick
             >
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
                 className="w-full h-80 object-cover rounded-md"
               />
-              <h3 className=" text-white text-lg mt-2 p-5">{movie.title}</h3>
+              <h3 className="text-white text-lg mt-2 p-5">{movie.title}</h3>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Modal för att visa filminformation */}
+      <MovieModal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        movie={selectedMovie}
+      />
     </div>
   );
 };
