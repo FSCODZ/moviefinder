@@ -1,11 +1,12 @@
 "use client"; // Markera denna komponent som klientkomponent
 
-import { useRouter } from 'next/router';  // Använd Router om du använder Next.js
+import { useRouter } from 'next/router';  
 import { useEffect, useState } from 'react';
 
 const MovieDetails = () => {
   const router = useRouter();
-  const { id } = router.query;  // Hämtar ID från URL (om du använder React Router, anpassa efter behov)
+  const { id } = router.query;  // Hämtar ID från URL 
+  
 
   const [movie, setMovie] = useState(null);  // Lagrar filmdata
   const [cast, setCast] = useState([]);  // Lagrar skådespelarlistan
@@ -31,7 +32,7 @@ const MovieDetails = () => {
     setCast(data.cast);
   };
 
-  if (!movie) return <div>Loading...</div>;  // Laddningsindikator
+  if (!movie) return <div>Loading...</div>;  
 
   return (
     <div className="container mx-auto p-4">
