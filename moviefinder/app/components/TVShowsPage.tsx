@@ -99,38 +99,31 @@ const TVGenrePage = () => {
           <h2 className="text-2xl mb-4">
             TV Shows in {genres.find((g) => g.id === selectedGenre)?.name}
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {tvShows.map((show) => (
-              <div key={show.id} className="bg-gray-800 p-4 rounded">
+              <div
+                key={show.id}
+                className="bg-gray-800 rounded overflow-hidden shadow-lg p-2 cursor-pointer"
+                onClick={() => openModal(show.id)} // Öppna modalen på klick
+              >
                 <img
-                  src={`https://image.tmdb.org/t/p/w500${show.poster_path}`}
+                  src={`https://image.tmdb.org/t/p/w200${show.poster_path}`}
                   alt={show.name}
-                  className="w-full h-72 object-cover mb-4 cursor-pointer"
-                  onClick={() => openModal(show.id)} // Öppna modalen på klick
+                  className="w-full h-72 object-cover mb-2"
                 />
-                <h3 className="text-lg">{show.name}</h3>
-                <p>Rating: {show.vote_average}/10</p>
+                <h3 className="font-bold text-sm">{show.name}</h3>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {selectedShow && (
-        <MovieModal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
-          movie={{
-            title: selectedShow.name,
-            description: selectedShow.overview,
-            releaseDate: selectedShow.release_date || "No release date available.",
-            posterPath: selectedShow.poster_path,
-            genres: selectedShow.genres.map((genre) => genre.name),
-            cast: selectedShow.cast.slice(0, 5), // Visa endast de första 5 skådespelarna
-            crew: selectedShow.crew.slice(0, 5), // Visa endast de första 5 medlemmarna av crew
-          }}
-        />
-      )}
+      {/* Modal för att visa vald show */}
+      <MovieModal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        movie={selectedShow}
+      />
     </div>
   );
 };
