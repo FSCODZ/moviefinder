@@ -1,17 +1,17 @@
-"use client"; // Markera denna komponent som en klientkomponent
+"use client"; 
 import React, { useState, useEffect } from "react";
-import MovieModal from "./MovieModal"; // Importera din MovieModal-komponent
+import MovieModal from "./MovieModal"; 
 import axios from "axios";
 
 const API_KEY = "dbeeb30a06089bf15dbac384b5baa25a";
 const BASE_URL = "https://api.themoviedb.org/3";
 
 const GenreComponent = () => {
-  const [genres, setGenres] = useState([]); // Håll genrerna
-  const [selectedGenre, setSelectedGenre] = useState(null); // Håll vald genre
-  const [movies, setMovies] = useState([]); // Håll filmerna
-  const [selectedMovie, setSelectedMovie] = useState(null); // Håll vald film
-  const [isModalOpen, setIsModalOpen] = useState(false); // Håll modalens öppning
+  const [genres, setGenres] = useState([]); 
+  const [selectedGenre, setSelectedGenre] = useState(null); 
+  const [movies, setMovies] = useState([]); 
+  const [selectedMovie, setSelectedMovie] = useState(null); 
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 
   // Hämta genrer från API
   useEffect(() => {
@@ -85,7 +85,7 @@ const GenreComponent = () => {
         {genres.map((genre) => (
           <button
             key={genre.id}
-            onClick={() => handleGenreClick(genre.id)} // Välj genre
+            onClick={() => handleGenreClick(genre.id)}
             className={`p-4 rounded bg-gray-700 hover:bg-gray-500 ${
               selectedGenre === genre.id ? "bg-gray-900" : ""
             }`}
@@ -107,7 +107,7 @@ const GenreComponent = () => {
                   src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
                   alt={movie.title}
                   className="mb-2 w-full h-72 object-cover cursor-pointer"
-                  onClick={() => openModal(movie.id)} // Öppna modal vid klick
+                  onClick={() => openModal(movie.id)} 
                 />
                 <h3 className="font-bold text-sm">{movie.title}</h3>
               </div>
@@ -125,8 +125,8 @@ const GenreComponent = () => {
                 releaseDate: selectedMovie.release_date || "No release date available.",
                 posterPath: selectedMovie.poster_path,
                 genres: selectedMovie.genres.map((genre) => genre.name),
-                cast: selectedMovie.cast.slice(0, 5), // Visa endast de första 5 skådespelarna
-                crew: selectedMovie.crew.slice(0, 5), // Visa endast de första 5 medlemmarna av crew
+                cast: selectedMovie.cast.slice(0, 5), 
+                crew: selectedMovie.crew.slice(0, 5), 
               }}
             />
           )}

@@ -1,8 +1,8 @@
-"use client"; // Markera denna komponent som klientkomponent
+"use client"; 
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import MovieModal from "./components/MovieModal"; // Importera MovieModal-komponent
+import MovieModal from "./components/MovieModal"; 
 
 const API_KEY = "dbeeb30a06089bf15dbac384b5baa25a"; // Din API-nyckel
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -13,8 +13,8 @@ const HomePage = () => {
   const [comedyMovies, setComedyMovies] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Tillstånd för modalen
-  const [selectedMovie, setSelectedMovie] = useState(null); // Vald film
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [selectedMovie, setSelectedMovie] = useState(null); 
 
   // Funktion för att hämta filmer baserat på genre
   const fetchMoviesByGenre = async (genreId, setterFunction) => {
@@ -56,6 +56,12 @@ const HomePage = () => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(); 
+    }
+  };
+
   // Funktion för att öppna modal och visa detaljer om en film
   const openModal = async (movie) => {
     try {
@@ -63,7 +69,7 @@ const HomePage = () => {
         params: {
           api_key: API_KEY,
           language: "en-US",
-          append_to_response: "credits", // Hämta skådespelare och crew
+          append_to_response: "credits", 
         },
       });
 
@@ -78,7 +84,7 @@ const HomePage = () => {
         posterPath: response.data.poster_path,
       };
       setSelectedMovie(movieDetails);
-      setIsModalOpen(true); // Öppna modalen
+      setIsModalOpen(true); 
     } catch (error) {
       console.error("Error fetching movie details:", error);
     }
@@ -90,9 +96,9 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchMoviesByGenre(28, setActionMovies); // Hämta actionfilmer
-    fetchMoviesByGenre(10749, setRomanticMovies); // Hämta romantiska filmer
-    fetchMoviesByGenre(35, setComedyMovies); // Hämta komedier
+    fetchMoviesByGenre(28, setActionMovies); 
+    fetchMoviesByGenre(10749, setRomanticMovies); 
+    fetchMoviesByGenre(35, setComedyMovies); 
   }, []);
 
   return (
@@ -108,6 +114,7 @@ const HomePage = () => {
             placeholder="Search for a movie, person..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyDown} 
           />
           <button
             className="p-3 bg-yellow-400 rounded-r-lg text-black"
@@ -127,7 +134,7 @@ const HomePage = () => {
               <div
                 key={movie.id}
                 className="bg-gray-800 rounded-lg overflow-hidden shadow-lg p-2 min-w-[160px] cursor-pointer"
-                onClick={() => openModal(movie)} // Öppna modal på klick
+                onClick={() => openModal(movie)} 
               >
                 <img
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -149,7 +156,7 @@ const HomePage = () => {
             <div
               key={movie.id}
               className="bg-gray-800 rounded-lg overflow-hidden shadow-lg p-2 min-w-[160px] cursor-pointer"
-              onClick={() => openModal(movie)} // Öppna modal på klick
+              onClick={() => openModal(movie)} 
             >
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -170,7 +177,7 @@ const HomePage = () => {
             <div
               key={movie.id}
               className="bg-gray-800 rounded-lg overflow-hidden shadow-lg p-2 min-w-[160px] cursor-pointer"
-              onClick={() => openModal(movie)} // Öppna modal på klick
+              onClick={() => openModal(movie)} 
             >
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -191,7 +198,7 @@ const HomePage = () => {
             <div
               key={movie.id}
               className="bg-gray-800 rounded-lg overflow-hidden shadow-lg p-2 min-w-[160px] cursor-pointer"
-              onClick={() => openModal(movie)} // Öppna modal på klick
+              onClick={() => openModal(movie)} 
             >
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}

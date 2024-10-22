@@ -1,17 +1,17 @@
-"use client"; // Markera som en klientkomponent
-import { useSearchParams } from 'next/navigation'; // För att läsa query-parametrar
+"use client"; 
+import { useSearchParams } from 'next/navigation'; 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import MovieModal from '../components/MovieModal'; // Importera MovieModal
+import MovieModal from '../components/MovieModal'; 
 
-const API_KEY = "dbeeb30a06089bf15dbac384b5baa25a"; // Din API-nyckel
+const API_KEY = "dbeeb30a06089bf15dbac384b5baa25a"; 
 
 const SearchResultsPage = () => {
   const searchParams = useSearchParams();
-  const query = searchParams.get('query'); // Få query-parametern från URL:en
+  const query = searchParams.get('query'); 
   const [searchResults, setSearchResults] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Tillstånd för modalen
-  const [selectedMovie, setSelectedMovie] = useState(null); // Vald film
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [selectedMovie, setSelectedMovie] = useState(null); 
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -32,7 +32,7 @@ const SearchResultsPage = () => {
     };
 
     fetchSearchResults();
-  }, [query]); // Kör varje gång query ändras
+  }, [query]); 
 
   // Funktion för att öppna modal och visa filmens detaljer
   const openModal = async (movie) => {
@@ -41,19 +41,19 @@ const SearchResultsPage = () => {
         params: {
           api_key: API_KEY,
           language: "en-US",
-          append_to_response: "credits", // Hämta skådespelare och crew
+          append_to_response: "credits", 
         },
       });
 
       const movieDetails = {
         id: response.data.id,
         title: response.data.title,
-        description: response.data.overview || "No description available.", // Hämta beskrivning
-        releaseDate: response.data.release_date || "No release date available.", // Hämta releasedatum
-        genres: response.data.genres.map((genre) => genre.name), // Hämta genrer
-        cast: response.data.credits.cast.slice(0, 5), // Hämta de första 5 skådespelarna
-        crew: response.data.credits.crew.slice(0, 5), // Hämta de första 5 i crew
-        posterPath: response.data.poster_path // Hämta bild för filmen
+        description: response.data.overview || "No description available.", 
+        releaseDate: response.data.release_date || "No release date available.", 
+        genres: response.data.genres.map((genre) => genre.name), 
+        cast: response.data.credits.cast.slice(0, 5), 
+        crew: response.data.credits.crew.slice(0, 5), 
+        posterPath: response.data.poster_path 
       };
 
       setSelectedMovie(movieDetails);
@@ -65,7 +65,7 @@ const SearchResultsPage = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedMovie(null); // Återställ vald film
+    setSelectedMovie(null); 
   };
 
   return (
@@ -76,7 +76,7 @@ const SearchResultsPage = () => {
           <div
             key={movie.id}
             className="bg-gray-800 rounded overflow-hidden shadow-lg p-2 cursor-pointer"
-            onClick={() => openModal(movie)} // Lägg till klickhändelse för att öppna modal
+            onClick={() => openModal(movie)} 
           >
             <img
               src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
