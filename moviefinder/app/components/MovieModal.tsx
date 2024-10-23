@@ -1,8 +1,58 @@
 import React from "react";
 import Modal from "react-modal";
 
-const MovieModal = ({ isOpen, onRequestClose, movie }) => {
-  if (!movie) return null; // Om ingen film är vald, returnera inget
+// Definiera typerna direkt i filen
+interface Actor {
+  id: number;
+  name: string;
+  profile_path: string;
+}
+
+interface CrewMember {
+  id: number;
+  name: string;
+}
+
+interface Movie {
+  title: string;
+  poster_path?: string;
+  overview?: string;
+  release_date?: string;
+  genres: { name: string }[];
+  cast: Actor[];
+  crew: CrewMember[];
+}
+
+interface ShowDetails {
+  name: string;
+  poster_path?: string;
+  overview?: string;
+  genres: { name: string }[];
+  cast: Actor[];
+  crew: CrewMember[];
+}
+
+// Gemensam typ
+type MovieOrShowDetails = Movie | ShowDetails;
+
+interface MovieModalProps {
+  isOpen: boolean;
+  onRequestClose: () => void;
+  movie?: MovieOrShowDetails; // Använd den gemensamma typen
+}
+
+const MovieModal: React.FC<MovieModalProps> = ({ isOpen, onRequestClose, movie }) => {
+  if (!movie) return null; // Om ingen film eller show är vald, returnera inget
+
+  // Hantera namnskillnader mellan Movie och ShowDetails
+  const title = "title" in movie ? movie.title : movie.name;
+  const posterPath = movie.poster_path;
+  const description = "overview" in movie ? movie.overview : "";
+  
+  // Vi tar bort referensen till first_air_date och bara använder release_date
+  const releaseDate = "release_date" in movie ? movie.release_date : "N/A";
+  
+  const genres = movie.genres.map(g => g.name);
 
   return (
     <Modal
@@ -16,25 +66,25 @@ const MovieModal = ({ isOpen, onRequestClose, movie }) => {
         Close
       </button>
       <div className="flex flex-col lg:flex-row">
-        {/* Filmens bild */}
-        {movie.posterPath && (
+        {/* Filmens eller showens bild */}
+        {posterPath && (
           <img
-            src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
-            alt={movie.title}
+            src={`https://image.tmdb.org/t/p/w500${posterPath}`}
+            alt={title}
             className="border-t-5 border-b-5 border-gray-700 rounded-[5px] inline-block h-[400px] w-[250px] object-cover mb-4" // Justera storlek på bilden
           />
         )}
 
-        {/* Filmens information */}
+        {/* Filmens eller showens information */}
         <div className="ml-4 flex flex-col text-white">
-          <h2 className="text-4xl font-bold text-yellow-400 mb-2">{movie.title}</h2>
+          <h2 className="text-4xl font-bold text-yellow-400 mb-2">{title}</h2>
           <h3 className="text-2xl text-yellow-400 font-semibold mb-1">Overview</h3>
-          <p className="text-lg mb-2">{movie.description}</p>
+          <p className="text-lg mb-2">{description}</p>
           <p className="text-lg text-yellow-400">
-            <strong>Released:</strong> {movie.releaseDate}
+            <strong>Released:</strong> {releaseDate || "N/A"}
           </p>
           <p className="text-lg text-yellow-400">
-            <strong>Genres:</strong> {movie.genres.join(", ")}
+            <strong>Genres:</strong> {genres.join(", ")}
           </p>
 
           <h3 className="mt-4 font-bold text-xl text-yellow-400">Cast:</h3>

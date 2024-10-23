@@ -6,12 +6,34 @@ import MovieModal from '../components/MovieModal';
 
 const API_KEY = "dbeeb30a06089bf15dbac384b5baa25a"; 
 
+interface Genre {
+  id: number;
+  name: string;
+}
+
+interface Movie {
+  id: number;
+  title: string;
+  poster_path: string;
+}
+
+interface MovieDetails {
+  id: number;
+  title: string;
+  description: string;
+  releaseDate: string;
+  genres: Genre[]; // Ändrat till Genre[]
+  cast: any[]; // Du kan skapa en specifik typ för cast om du vill
+  crew: any[]; // Du kan skapa en specifik typ för crew om du vill
+  posterPath: string;
+}
+
 const SearchResultsPage = () => {
   const searchParams = useSearchParams();
   const query = searchParams.get('query'); 
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false); 
-  const [selectedMovie, setSelectedMovie] = useState(null); 
+  const [selectedMovie, setSelectedMovie] = useState<MovieDetails | null>(null); 
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -34,8 +56,7 @@ const SearchResultsPage = () => {
     fetchSearchResults();
   }, [query]); 
 
-  // Funktion för att öppna modal och visa filmens detaljer
-  const openModal = async (movie) => {
+  const openModal = async (movie: Movie) => {
     try {
       const response = await axios.get(`https://api.themoviedb.org/3/movie/${movie.id}`, {
         params: {
@@ -45,19 +66,19 @@ const SearchResultsPage = () => {
         },
       });
 
-      const movieDetails = {
+      const movieDetails: MovieDetails = {
         id: response.data.id,
         title: response.data.title,
         description: response.data.overview || "No description available.", 
         releaseDate: response.data.release_date || "No release date available.", 
-        genres: response.data.genres.map((genre) => genre.name), 
+        genres: response.data.genres.map((genre: any) => ({ id: genre.id, name: genre.name })), // Omvandla till Genre[]
         cast: response.data.credits.cast.slice(0, 5), 
         crew: response.data.credits.crew.slice(0, 5), 
         posterPath: response.data.poster_path 
       };
 
       setSelectedMovie(movieDetails);
-      setIsModalOpen(true); // Öppna modalen
+      setIsModalOpen(true); 
     } catch (error) {
       console.error("Error fetching movie details:", error);
     }
@@ -88,11 +109,10 @@ const SearchResultsPage = () => {
         ))}
       </div>
 
-      {/* Modal för att visa filminformation */}
       <MovieModal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
-        movie={selectedMovie}
+        movie={selectedMovie || undefined}  
       />
     </div>
   );

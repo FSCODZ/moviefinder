@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   // Funktion för att lyssna på tangenttryck i sökrutan
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch(); // Trigga sökningen när "Enter" trycks
     }

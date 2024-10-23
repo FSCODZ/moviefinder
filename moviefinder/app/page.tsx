@@ -8,16 +8,39 @@ const API_KEY = "dbeeb30a06089bf15dbac384b5baa25a"; // Din API-nyckel
 const BASE_URL = "https://api.themoviedb.org/3";
 
 const HomePage = () => {
-  const [actionMovies, setActionMovies] = useState([]);
-  const [romanticMovies, setRomanticMovies] = useState([]);
-  const [comedyMovies, setComedyMovies] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
-  const [selectedMovie, setSelectedMovie] = useState(null); 
+  const [actionMovies, setActionMovies] = useState<Movie[]>([]);
+  const [romanticMovies, setRomanticMovies] = useState<Movie[]>([]);
+  const [comedyMovies, setComedyMovies] = useState<Movie[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<Movie[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); 
+  const [selectedMovie, setSelectedMovie] = useState<Movie | undefined>(undefined); 
+
+  // Definiera typerna direkt i filen
+  interface Actor {
+    id: number;
+    name: string;
+    profile_path: string;
+  }
+
+  interface CrewMember {
+    id: number;
+    name: string;
+  }
+
+  interface Movie {
+    id: number;
+    title: string;
+    poster_path?: string;
+    overview?: string;
+    release_date?: string;
+    genres: { name: string }[];
+    cast: Actor[];
+    crew: CrewMember[];
+  }
 
   // Funktion för att hämta filmer baserat på genre
-  const fetchMoviesByGenre = async (genreId, setterFunction) => {
+  const fetchMoviesByGenre = async (genreId: number, setterFunction: React.Dispatch<React.SetStateAction<Movie[]>>) => {
     try {
       const response = await axios.get(`${BASE_URL}/discover/movie`, {
         params: {
@@ -27,14 +50,14 @@ const HomePage = () => {
           language: "en-US",
         },
       });
-      setterFunction(response.data.results);
+      setterFunction(response.data.results as Movie[]);
     } catch (error) {
       console.error(`Error fetching movies for genre ${genreId}:`, error);
     }
   };
 
   // Funktion för att hämta filmer baserat på sökning
-  const fetchMoviesBySearch = async (query) => {
+  const fetchMoviesBySearch = async (query: string) => {
     try {
       const response = await axios.get(`${BASE_URL}/search/movie`, {
         params: {
@@ -43,7 +66,7 @@ const HomePage = () => {
           language: "en-US",
         },
       });
-      setSearchResults(response.data.results);
+      setSearchResults(response.data.results as Movie[]);
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
@@ -56,14 +79,14 @@ const HomePage = () => {
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch(); 
     }
   };
 
   // Funktion för att öppna modal och visa detaljer om en film
-  const openModal = async (movie) => {
+  const openModal = async (movie: Movie) => {
     try {
       const response = await axios.get(`${BASE_URL}/movie/${movie.id}`, {
         params: {
@@ -73,15 +96,15 @@ const HomePage = () => {
         },
       });
 
-      const movieDetails = {
+      const movieDetails: Movie = {
         id: response.data.id,
         title: response.data.title,
-        description: response.data.overview || "No description available.",
-        releaseDate: response.data.release_date || "No release date available.",
-        genres: response.data.genres.map((genre) => genre.name),
+        overview: response.data.overview || "No description available.",
+        release_date: response.data.release_date || "No release date available.",
+        genres: response.data.genres,
         cast: response.data.credits.cast.slice(0, 5),
         crew: response.data.credits.crew.slice(0, 5),
-        posterPath: response.data.poster_path,
+        poster_path: response.data.poster_path,
       };
       setSelectedMovie(movieDetails);
       setIsModalOpen(true); 
@@ -92,7 +115,7 @@ const HomePage = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedMovie(null);
+    setSelectedMovie(undefined);
   };
 
   useEffect(() => {
@@ -215,7 +238,7 @@ const HomePage = () => {
       <MovieModal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
-        movie={selectedMovie}
+         movie={selectedMovie}
       />
     </div>
   );

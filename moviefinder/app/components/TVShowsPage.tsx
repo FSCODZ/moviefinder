@@ -7,11 +7,33 @@ import MovieModal from "./MovieModal"; // Importera din MovieModal-komponent
 const API_KEY = "dbeeb30a06089bf15dbac384b5baa25a";
 const BASE_URL = "https://api.themoviedb.org/3";
 
+interface Genre {
+  id: number;
+  name: string;
+}
+
+interface TVShow {
+  id: number;
+  name: string;
+  poster_path: string;
+}
+
+interface ShowDetails {
+  id: number;
+  name: string;
+  overview: string;
+  poster_path: string;
+  release_date: string;
+  genres: Genre[];
+  cast: any[];
+  crew: any[];
+}
+
 const TVGenrePage = () => {
-  const [genres, setGenres] = useState([]);
-  const [selectedGenre, setSelectedGenre] = useState(null);
-  const [tvShows, setTvShows] = useState([]);
-  const [selectedShow, setSelectedShow] = useState(null); // För vald TV-show
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
+  const [tvShows, setTvShows] = useState<TVShow[]>([]);
+  const [selectedShow, setSelectedShow] = useState<ShowDetails | null>(null); // För vald TV-show
   const [isModalOpen, setIsModalOpen] = useState(false); // För modal
 
   // Hämta alla genrer för TV-serier
@@ -27,7 +49,7 @@ const TVGenrePage = () => {
   };
 
   // Hämta TV-serier baserat på vald genre
-  const fetchTVShowsByGenre = async (genreId) => {
+  const fetchTVShowsByGenre = async (genreId: number) => {
     try {
       const response = await axios.get(`${BASE_URL}/discover/tv`, {
         params: {
@@ -46,12 +68,12 @@ const TVGenrePage = () => {
     fetchGenres();
   }, []);
 
-  const handleGenreClick = (genreId) => {
+  const handleGenreClick = (genreId: number) => {
     setSelectedGenre(genreId);
     fetchTVShowsByGenre(genreId);
   };
 
-  const openModal = async (showId) => {
+  const openModal = async (showId: number) => {
     try {
       const response = await axios.get(`${BASE_URL}/tv/${showId}?api_key=${API_KEY}&append_to_response=credits`);
       const showDetails = response.data;
@@ -120,10 +142,11 @@ const TVGenrePage = () => {
 
       {/* Modal för att visa vald show */}
       <MovieModal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        movie={selectedShow}
-      />
+  isOpen={isModalOpen}
+  onRequestClose={closeModal}
+  movie={selectedShow || undefined}  
+/>
+
     </div>
   );
 };

@@ -3,30 +3,44 @@
 import { useRouter } from 'next/router';  
 import { useEffect, useState } from 'react';
 
+// Definiera typer för Movie och Actor
+interface Movie {
+  poster_path: string;
+  title: string;
+  release_date: string;
+  genres: { name: string }[];
+  overview: string;
+}
+
+interface Actor {
+  cast_id: number;
+  profile_path: string;
+  name: string;
+}
+
 const MovieDetails = () => {
   const router = useRouter();
   const { id } = router.query;  // Hämtar ID från URL 
   
-
-  const [movie, setMovie] = useState(null);  // Lagrar filmdata
-  const [cast, setCast] = useState([]);  // Lagrar skådespelarlistan
+  const [movie, setMovie] = useState<Movie | null>(null);  // Lagrar filmdata med korrekt typ
+  const [cast, setCast] = useState<Actor[]>([]);  // Lagrar skådespelarlistan
 
   useEffect(() => {
     if (id) {
-      fetchMovieDetails(id);
-      fetchCastDetails(id);
+      fetchMovieDetails(id as string);  // Typen 'string' för id
+      fetchCastDetails(id as string);  // Typen 'string' för id
     }
   }, [id]);
 
   // Funktion för att hämta filmens detaljer
-  const fetchMovieDetails = async (movieId) => {
+  const fetchMovieDetails = async (movieId: string) => {  // Ange typen 'string' för movieId
     const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=YOUR_API_KEY`);
     const data = await res.json();
     setMovie(data);
   };
 
   // Funktion för att hämta skådespelarna
-  const fetchCastDetails = async (movieId) => {
+  const fetchCastDetails = async (movieId: string) => {  // Ange typen 'string' för movieId
     const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=YOUR_API_KEY`);
     const data = await res.json();
     setCast(data.cast);
@@ -46,7 +60,7 @@ const MovieDetails = () => {
         <div className="md:ml-6">
           <h1 className="text-3xl font-bold mb-4">{movie.title}</h1>
           <p><strong>Release Date:</strong> {movie.release_date}</p>
-          <p><strong>Genre:</strong> {movie.genres.map((g) => g.name).join(', ')}</p>
+          <p><strong>Genre:</strong> {movie.genres.map((g: { name: string }) => g.name).join(', ')}</p>
           <p><strong>Overview:</strong> {movie.overview}</p>
         </div>
       </div>
